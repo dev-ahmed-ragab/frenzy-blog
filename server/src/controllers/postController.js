@@ -52,6 +52,7 @@ export const createPost = async (req, res) => {
     res.status(201).json(populatedPost);
   } catch (error) {
     console.error('Error creating post:', error);
+console.error('Error details:', error.stack);
     if (req.file) {
       await fs.unlink(req.file.path);
     }
@@ -199,4 +200,4 @@ export const deletePost = async (req, res) => {
     console.error('Error deleting post:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
-}; 
+};

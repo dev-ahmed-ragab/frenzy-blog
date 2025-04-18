@@ -31,24 +31,24 @@ export const loginValidator = [
 export const postValidator = [
   body('title')
     .exists()
-    .withMessage('Title is required')
+    .withMessage('عنوان المنشور مطلوب')
     .notEmpty()
-    .withMessage('Title cannot be empty')
+    .withMessage('لا يمكن أن يكون العنوان فارغاً')
     .trim()
     .isLength({ max: 100 })
-    .withMessage('Title cannot be more than 100 characters'),
+    .withMessage('يجب ألا يتجاوز العنوان 100 حرف'),
   body('content')
     .exists()
-    .withMessage('Content is required')
+    .withMessage('محتوى المنشور مطلوب')
     .notEmpty()
-    .withMessage('Content cannot be empty')
+    .withMessage('لا يمكن أن يكون المحتوى فارغاً')
     .trim(),
   body('category')
     .exists()
-    .withMessage('Category is required')
+    .withMessage('تصنيف المنشور مطلوب')
     .notEmpty()
-    .withMessage('Category cannot be empty')
+    .withMessage('لا يمكن أن يكون التصنيف فارغاً')
     .trim()
-    .isIn(['Technology', 'Travel', 'Food', 'Lifestyle', 'Business', 'Other'])
-    .withMessage('Invalid category selected')
-]; 
+    .isIn(['frontend', 'backend', 'fullstack', 'devops', 'database', 'other'])
+    .withMessage('تصنيف غير صالح')
+];
