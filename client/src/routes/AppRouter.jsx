@@ -5,12 +5,14 @@ const Home = lazy(() => import("../pages/Home"));
 const About = lazy(() => import("../pages/About"));
 const Contact = lazy(() => import("../pages/Contact"));
 const Admin = lazy(() => import("../pages/Admin"));
-const ArticleDetails = lazy(() => import("./../pages/ArticleDetails"))
+const ArticleDetails = lazy(() => import("./../pages/ArticleDetails"));
+import Loading from "../components/common/Loading";
 
 const AppRouter = () => {
      return (
         <BrowserRouter>
-            <Suspense fallback={<div>loading ...</div>}>
+            <Suspense
+                fallback={<Loading/>} >
                 <Routes>
                     <Route  path="/" element={<AppLayout/>}>
                         <Route index element={<Home/>}/>
