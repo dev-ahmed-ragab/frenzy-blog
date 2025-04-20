@@ -41,9 +41,7 @@ function Loading() {
           </div>
         </motion.div>
       </div>
-    )
-
-    
+  ) 
 }
 
 export default Loading;
