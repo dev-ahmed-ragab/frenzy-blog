@@ -26,7 +26,11 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
-  }
+  },
+  avatarUrl: {
+    type: String,
+    default: null
+  },
 }, {
   timestamps: true
 });
@@ -47,4 +51,4 @@ userSchema.methods.comparePassword = async function(enteredPassword) {
 
 const User = mongoose.model('User', userSchema);
 
-export default User; 
+export default User;

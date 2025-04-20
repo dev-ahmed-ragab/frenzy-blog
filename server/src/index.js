@@ -2,11 +2,11 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import connectDB from './config/database.js';
 import userRoutes from './routes/userRoutes.js';
-import postRoutes from './routes/postRoutes.js';
-import fs from 'fs';
+import postsRouter from './routes/posts.js';
 
 // Load environment variables
 dotenv.config();
@@ -36,22 +36,11 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/users', userRoutes);
-app.use('/api/posts', postRoutes);
-
-// Basic route
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the Blog API' });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
-});
+app.use('/api/posts', postsRouter);
 
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Uploads directory: ${path.join(__dirname, '../uploads')}`);
-}); 
+});

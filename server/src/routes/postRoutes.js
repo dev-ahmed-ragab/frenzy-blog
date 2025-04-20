@@ -1,31 +1,26 @@
 import express from 'express';
-import {
-  createPost,
-  getPosts,
-  getPostById,
-  updatePost,
-  deletePost
-} from '../controllers/postController.js';
 import { protect } from '../middleware/auth.js';
 import { postValidator } from '../middleware/validators.js';
 import upload from '../middleware/uploadMiddleware.js';
+import {
+  getAllPosts,
+  getPostById,
+  createPost,
+  updatePost,
+  deletePost,
+  getUserPosts
+} from '../controllers/post.controller.js';
 
 const router = express.Router();
 
-// @route   GET /api/posts
-router.get('/', getPosts);
-
-// @route   GET /api/posts/:id
+// Public routes
+router.get('/', getAllPosts);
 router.get('/:id', getPostById);
 
-// @route   POST /api/posts
-// upload.single('image') makes the image field optional
+// Protected routes
 router.post('/', protect, upload.single('image'), postValidator, createPost);
-
-// @route   PUT /api/posts/:id
 router.put('/:id', protect, upload.single('image'), postValidator, updatePost);
-
-// @route   DELETE /api/posts/:id
 router.delete('/:id', protect, deletePost);
+router.get('/user/posts', protect, getUserPosts);
 
-export default router; 
+export default router;
