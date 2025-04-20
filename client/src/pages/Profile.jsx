@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { PencilIcon, TrashIcon, CameraIcon } from '@heroicons/react/24/outline';
+import { easeInOut, motion } from 'framer-motion';
+import admin from "../assets/admin.jpg";
 
 Modal.setAppElement('#root');
 
@@ -108,10 +110,37 @@ const Profile = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Profile</h1>
-        <div>
+    <motion.div 
+      className="max-w-2xl mx-auto my-12 bg-white rounded-3xl shadow-md px-12 pt-14 pb-9"
+      animate={{opacity: 0, scale: 0}}
+      whileInView={{opacity: 1, scale: 1}}
+      transition={{duration: 0.7, ease: easeInOut}}
+      viewport={{once: true}}
+      >
+        <h1 className="text-2xl font-bold text-center uppercase text-[50px] text-[#df70df] pb-8">Profile</h1>
+
+
+
+      <div className="flex flex-col md:flex-row items-center gap-12">
+        <img
+          src={avatarPreview? 'http://localhost:5000' + avatarPreview : admin}
+          alt="profile"
+          className="w-64 h-64 rounded-full object-cover mb-9"
+        />
+        <div className="flex-1 mb-12">
+          <div className="mb-4 flex gap-5 items-center">
+            <label className="text-2xl text-gray-600 font-medium">Full Name : </label>
+            <p className="text-2xl font-bold text-[#df70df]">{userData.username || "Ahmed"}</p>
+          </div>
+          <div className=' flex gap-5 items-center'>
+            <label className="text-2xl text-gray-600 font-medium">Email : </label>
+            <p className="text-2xl font-bold text-[#df70df]">{userData.email || "test@test.com"}</p>
+          </div>
+        </div>
+
+        
+      </div>
+      <div className="flex items-center  justify-center mb-6">
           <button
             onClick={() => setIsModalOpen(true)}
             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -133,25 +162,6 @@ const Profile = () => {
             <CameraIcon className="h-5 w-5 mr-2" />
             Change Avatar
           </button>
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row items-center gap-6">
-        <img
-          src={'http://localhost:5000' + avatarPreview}
-          alt="Profile"
-          className="w-32 h-32 rounded-full object-cover"
-        />
-        <div className="flex-1">
-          <div className="mb-4">
-            <label className="text-sm text-gray-600">Full Name</label>
-            <p className="text-lg font-semibold">{userData.username}</p>
-          </div>
-          <div>
-            <label className="text-sm text-gray-600">Email</label>
-            <p className="text-lg font-semibold">{userData.email}</p>
-          </div>
-        </div>
       </div>
 
       <Modal
@@ -248,7 +258,7 @@ const Profile = () => {
           </button>
         </div>
       </Modal>
-    </div>
+    </motion.div>
   );
 };
 
