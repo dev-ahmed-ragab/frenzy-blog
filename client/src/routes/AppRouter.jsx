@@ -8,6 +8,26 @@ const About = lazy(() => import("../pages/About"));
 const Contact = lazy(() => import("../pages/Contact"));
 const Admin = lazy(() => import("../pages/Admin"));
 const ArticleDetails = lazy(() => import("./../pages/ArticleDetails"));
+import Loading from "../components/common/Loading";
+
+const AppRouter = () => {
+     return (
+        <BrowserRouter>
+            <Suspense
+                fallback={<Loading/>} >
+                <Routes>
+                    <Route  path="/" element={<AppLayout/>}>
+                        <Route index element={<Home/>}/>
+                        <Route path="/about" element={<About/>}/>
+                        <Route path="/admin" element={<Admin/>}/>
+                        <Route path="/articleDetails" element={<ArticleDetails/>}/>
+                        <Route path="/Contact" element={<Contact/>}/>
+                    </Route>
+                </Routes>   
+            </Suspense>
+        </BrowserRouter>
+     )
+}
 
 const AppRouter = () => {
   return (
