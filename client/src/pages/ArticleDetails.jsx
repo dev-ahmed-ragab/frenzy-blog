@@ -22,8 +22,8 @@ function ArticleDetails () {
     useEffect(() => {
         const fetchPost = async () => {
           try {
-            // const res = await axios.get(`http://localhost:5000/api/posts/${postId}`);
-            const res = await axios.get(`http://localhost:5000/api/posts/680121b6bfcbc0ff1d024835`);
+            const res = await axios.get(`http://localhost:5000/api/posts/${postId}`);
+            // const res = await axios.get(`http://localhost:5000/api/posts/680121b6bfcbc0ff1d024835`);
             const normalized = normalizePost(res.data);
             setPost(normalized);
           } catch (error) {
