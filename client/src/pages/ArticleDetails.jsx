@@ -1,16 +1,42 @@
-import { useState } from "react";
+ 
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import Loading from "../components/common/Loading";
 
 function ArticleDetails () {
     let currentUser = "001"; // Replace with actual user logic
-
+    const userId = useSelector((state) => state.user.id);
+    console.log("User ID from Redux:", userId);
     const defaultUserImg ="user.jpg";
+    const { id: postId } = useParams();
 
     const [editingComment, setEditingComment] = useState(null);
     const [deletingCommentId, setDeletingCommentId] = useState(null);
     const [editedText, setEditedText] = useState("");
+    const [post, setPost] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    let post = {
+    useEffect(() => {
+        const fetchPost = async () => {
+          try {
+            // const res = await axios.get(`http://localhost:5000/api/posts/${postId}`);
+            const res = await axios.get(`http://localhost:5000/api/posts/680121b6bfcbc0ff1d024835`);
+            const normalized = normalizePost(res.data);
+            setPost(normalized);
+          } catch (error) {
+            console.error("Error fetching post:", error);
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchPost();
+      }, []);
+
+    let post2 = {
         title: "Article Title",
         content: "This is the content of the article.",
         img: "s.jpg",
@@ -34,6 +60,17 @@ function ArticleDetails () {
             },
         ],
     }
+    const normalizePost = (post2) => ({
+        title: post2.title,
+        content: post2.content,
+        img: post2.imageUrl,
+        Auther: post2.author?.username || "Unknown Author",
+        AuthorImg: defaultUserImg, // if you don’t have one from backend
+        AutherEmail: post2.author?.email || "no-email@example.com",
+        categories: [post2.category],
+        comments: post2.comments || [],
+    });
+ 
     const handleMakeComment = (e) => {
         // e.preventDefault();
         // const comment = e.target.elements.comment.value;
@@ -58,8 +95,9 @@ function ArticleDetails () {
         toast.success("Comment edited successfully!");
     }
 
-    return (
-        <div className="p-6 max-w-4xl mx-auto bg-white shadow-md rounded-xl space-y-6 mt-5">
+    return (<>
+        {post && <div className="p-6 max-w-4xl mx-auto bg-white shadow-md rounded-xl space-y-6 my-5">
+            
             {/* Article main content */}
             <div>
                 <img src={post.img} alt="Article" className="w-full h-64 object-cover rounded-lg mb-4" />
@@ -104,7 +142,7 @@ function ArticleDetails () {
                 ))}
             </div>
 
-            {/* Comments section */}
+            {/* Comments section
             <div className="space-y-4">
                 {post.comments.length === 0 ? (
                     <p className="text-gray-500 italic">No comments yet.</p>
@@ -125,7 +163,7 @@ function ArticleDetails () {
                                     </p>
                                     <p className="text-sm text-gray-600">{comment.comment}</p>
                                     {/* Edit/Delete buttons if current user is the author */}
-                                    {currentUser === comment.userid && (
+                                    {/*{currentUser === comment.userid && (
                                         <div className="space-x-2 mt-2">
                                         <button
                                             onClick={() => {
@@ -153,7 +191,7 @@ function ArticleDetails () {
             </div>
 
             {/* Add Comment Form */}
-            <div>
+            {/*<div>
                 <h2 className="text-2xl font-semibold mb-2">Add a Comment</h2>
                 <form className="space-y-3" onSubmit={handleMakeComment}>
                     <textarea
@@ -171,7 +209,7 @@ function ArticleDetails () {
             </div>
                 
             {/* Edit Comment Modal */}
-            {editingComment && (
+            {/*{editingComment && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md space-y-4">
                     <h3 className="text-lg font-semibold">Edit Comment</h3>
@@ -202,7 +240,7 @@ function ArticleDetails () {
             )}
 
             {/* Delete Confirmation Modal */}
-            {deletingCommentId !== null && (
+            {/*{deletingCommentId !== null && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm space-y-4">
                     <h3 className="text-lg font-semibold text-red-600">Delete Comment</h3>
@@ -226,11 +264,13 @@ function ArticleDetails () {
                     </div>
                     </div>
                 </div>
-            )}
+            )} */}
 
-        </div>
+</div>}
+{!post && <Loading></Loading>}
 
-    )
+
+    </>)
 }
 
 export default ArticleDetails ;

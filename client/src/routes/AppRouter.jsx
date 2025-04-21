@@ -8,29 +8,37 @@ const About = lazy(() => import("../pages/About"));
 const Contact = lazy(() => import("../pages/Contact"));
 const Admin = lazy(() => import("../pages/Admin"));
 const ArticleDetails = lazy(() => import("./../pages/ArticleDetails"));
+const SignUp = lazy(() => import("../Auth/SignUp"));
+const LogIn = lazy(() => import("../Auth/LogIn"));
 import Loading from "../components/common/Loading";
 import ErrorMessage from './../components/common/Error';
+import { Provider } from "react-redux";
+import {store} from "../Redux/Store";
 
 const AppRouter = () => {
      return (
-        <BrowserRouter>
-            <Suspense
-                fallback={<Loading/>} >
-                <Routes>
-                    <Route  path="/" element={<AppLayout/>}>
-                        <Route index element={<Home/>}/>
-                        <Route path="/about" element={<About/>}/>
-                        <Route path="/admin" element={<Admin/>}/>
-                        <Route path="/articleDetails" element={<ArticleDetails/>}/>
-                        <Route path="/Contact" element={<Contact/>}/>
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/posts" element={<Posts />} />
-                        <Route path="*" element={<ErrorMessage/>}/>
+        <Provider store={store}>
+            <BrowserRouter>
+                <Suspense
+                    fallback={<Loading/>} >
+                    <Routes>
+                        <Route  path="/" element={<AppLayout/>}>
+                            <Route index element={<Home/>}/>
+                            <Route path="/about" element={<About/>}/>
+                            <Route path="/admin" element={<Admin/>}/>
+                            <Route path="/articleDetails" element={<ArticleDetails/>}/>
+                            <Route path="/Contact" element={<Contact/>}/>
+                            <Route path="/profile" element={<Profile />} />
+                            <Route path="/posts" element={<Posts />} />
+                            <Route path="/signup" element={<SignUp />} />
+                            <Route path="/login" element={<LogIn />} />
+                            <Route path="*" element={<ErrorMessage/>}/>
 
-                    </Route>
-                </Routes>   
-            </Suspense>
-        </BrowserRouter>
+                        </Route>
+                    </Routes>   
+                </Suspense>
+            </BrowserRouter>
+        </Provider>
      )
 }
 

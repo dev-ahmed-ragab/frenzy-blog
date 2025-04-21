@@ -7,7 +7,7 @@ const AppLayout = () => {
     return (
         <div className="bg-[#dde7f5] min-h-screen">
             <Navbar/>
-                <Toaster position="top-right" reverseOrder={false} />
+                <Toaster />
                 <Outlet/>
             <Footer/>
         </div>
