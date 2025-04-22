@@ -31,8 +31,9 @@ function Navbar(){
                 <div className="hidden  lg:flex gap-5 font-bold uppercase">
                     <NavLink to="/" className={navlinkClassName}>Home</NavLink>
                     <NavLink to="/about" className={navlinkClassName}> About</NavLink>
-                    <NavLink to="/admin" className={navlinkClassName}> Admin</NavLink>
                     <NavLink to="/contact" className={navlinkClassName}>Contact </NavLink>
+                    <NavLink to="/signup" className={navlinkClassName}> Sign Up</NavLink>
+                    <NavLink to="/login" className={navlinkClassName}> Sign In</NavLink>
                 </div>
                 <Formik>
                     <Form className="relative hidden md:block ">
@@ -53,11 +54,12 @@ function Navbar(){
                         animate={{opacity: 1, y: 0 }}
                         exit={{opacity: 0, y: -20}}
                         transition={{duration: 0.5, ease: "easeInOut"}}
-                        className="lg:hidden  flex flex-col font-bold absolute top-36 right-8 bg-black p-8 items-center gap-2 rounded-xl">
+                        className="lg:hidden  flex flex-col font-bold z-10 absolute top-36 right-8 bg-black p-8 items-center gap-2 rounded-xl">
                         <NavLink to="/" onClick={toggleMenu} className={mobileNavlinkClassName}>Home</NavLink>
                         <NavLink to="/about" onClick={toggleMenu} className={mobileNavlinkClassName}> About</NavLink>
-                        <NavLink to="/admin" onClick={toggleMenu} className={mobileNavlinkClassName}> Admin</NavLink>
                         <NavLink to="/contact" onClick={toggleMenu} className={mobileNavlinkClassName}>Contact </NavLink>
+                        <NavLink to="/signup" onClick={toggleMenu} className={mobileNavlinkClassName}> Sign UP</NavLink>
+                        <NavLink to="/login" onClick={toggleMenu} className={mobileNavlinkClassName}> Sign In</NavLink>
                     </motion.div>
                     </AnimatePresence>
                 )

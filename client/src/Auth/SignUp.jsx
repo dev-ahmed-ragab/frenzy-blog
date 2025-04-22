@@ -41,7 +41,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#dde7f5] ">
+    <div className="min-h-screen mx-3 md:mx-0 flex items-center justify-center bg-[#dde7f5] ">
       <Toaster />
       <form
         onSubmit={handleSubmit}
