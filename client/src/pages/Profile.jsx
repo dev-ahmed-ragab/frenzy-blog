@@ -5,6 +5,7 @@ import { easeInOut, motion } from 'framer-motion';
 import admin from "../assets/admin.jpg";
 
 Modal.setAppElement('#root');
+const token = localStorage.getItem('token');
 
 const Profile = () => {
 
@@ -15,7 +16,7 @@ const Profile = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDE0ZmU5M2ZjODQwODVmNTdmYmM1YSIsImlhdCI6MTc0NDkxNjQ1OCwiZXhwIjoxNzQ1MDAyODU4fQ.RmcKHX65xM0XdX8vQQPTbJWOXhOMiff3jEaBtE0zDYo'
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           username: userData.username,
@@ -47,7 +48,7 @@ const Profile = () => {
       try {
         const response = await fetch('http://localhost:5000/api/users/profile', {
           headers: {
-            Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDE0ZmU5M2ZjODQwODVmNTdmYmM1YSIsImlhdCI6MTc0NDkxNjQ1OCwiZXhwIjoxNzQ1MDAyODU4fQ.RmcKHX65xM0XdX8vQQPTbJWOXhOMiff3jEaBtE0zDYo'
+            Authorization: `Bearer ${token}`
           }
         });
         const data = await response.json();
@@ -83,7 +84,7 @@ const Profile = () => {
       const formData = new FormData();
       const fileInput = document.querySelector('input[type="file"]');
       if (!fileInput.files[0]) {
-        alert('الرجاء اختيار صورة');
+        alert('Please select an image');
         return;
       }
       formData.append('avatar', fileInput.files[0]);
@@ -91,7 +92,7 @@ const Profile = () => {
       const response = await fetch(`http://localhost:5000/api/users/${userData._id}/avatar`, {
         method: 'POST',
         headers: {
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MDE0ZmU5M2ZjODQwODVmNTdmYmM1YSIsImlhdCI6MTc0NDkxNjQ1OCwiZXhwIjoxNzQ1MDAyODU4fQ.RmcKHX65xM0XdX8vQQPTbJWOXhOMiff3jEaBtE0zDYo'
+          Authorization: `Bearer ${token}`
         },
         body: formData
       });
@@ -101,11 +102,11 @@ const Profile = () => {
         setUserData(prev => ({ ...prev, avatar: data.avatarUrl }));
         setIsAvatarModalOpen(false);
       } else {
-        alert('فشل تحميل الصورة');
+        alert('Failed to upload image');
       }
     } catch (error) {
-      console.error('Error uploading avatar:', error);
-      alert('حدث خطأ أثناء تحميل الصورة');
+      console.error('Error occurred while uploading image:', error);
+      alert('Error occurred while uploading image');
     }
   };
 
@@ -220,7 +221,7 @@ const Profile = () => {
         overlayClassName="fixed inset-0 bg-black bg-opacity-50"
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">تغيير الصورة الشخصية</h2>
+          <h2 className="text-xl font-bold">Change Profile Picture</h2>
           <button
             onClick={() => setIsAvatarModalOpen(false)}
             className="text-gray-500 hover:text-gray-700"
@@ -237,7 +238,7 @@ const Profile = () => {
         <div className="flex justify-center mb-4">
           <img
             src={avatarPreview || 'http://localhost:5000' + userData.avatar}
-            alt="معاينة الصورة"
+            alt="Image preview"
             className="w-32 h-32 rounded-full object-cover"
           />
         </div>
@@ -247,14 +248,14 @@ const Profile = () => {
             onClick={() => setIsAvatarModalOpen(false)}
             className="py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           >
-            إلغاء
+            Cancel
           </button>
           <button
             type="button"
             onClick={handleAvatarUpload}
             className="py-2 px-4 border border-transparent rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
-            تحميل
+            Upload
           </button>
         </div>
       </Modal>

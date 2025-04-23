@@ -8,8 +8,9 @@ const Contact = lazy(() => import("../pages/Contact"));
 const ArticleDetails = lazy(() => import("./../pages/ArticleDetails"));
 const SignUp = lazy(() => import("../Auth/SignUp"));
 const LogIn = lazy(() => import("../Auth/LogIn"));
-const Profile = lazy(() => "../pages/Profile");
+const Profile = lazy(() => import("../pages/Profile"));
 const Posts = lazy(() => import("../pages/Posts"));
+const MyPosts = lazy(() => import("../pages/MyPosts"));
 const CategoryPage = lazy(() => ("../pages/CategoryPage"))
 import { Provider } from "react-redux";
 import {store} from "../Redux/Store";
@@ -32,6 +33,7 @@ const AppRouter = () => {
                             <Route path="/Contact" element={<Contact/>}/>
                             <Route path="/profile" element={<Profile />} />
                             <Route path="/posts" element={<Posts />} />
+<Route path="/my-posts" element={<MyPosts />} />
                             <Route path="/signup" element={<SignUp />} />
                             <Route path="/login" element={<LogIn />} />
                             <Route path="/signup" element={<SignUp/>}/>
@@ -58,6 +60,7 @@ const AppRouter = () => {
 //             <Route path="/Contact" element={<Contact />} />
 //             <Route path="/profile" element={<Profile />} />
 //             <Route path="/posts" element={<Posts />} />
+<Route path="/my-posts" element={<MyPosts />} />
 //             <Route path="*" element={<div>404 Not Found</div>} />
 //           </Route>
 //         </Routes>

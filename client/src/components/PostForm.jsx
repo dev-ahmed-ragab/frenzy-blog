@@ -5,10 +5,10 @@ const PostForm = ({ post, onSubmit, onClose }) => {
     title: '',
     content: '',
     category: 'other',
-    image: null // لإضافة ملف الصورة الجديد
+    image: null // for adding new image file
   });
 
-  const [previewImage, setPreviewImage] = useState(null); // لعرض معاينة الصورة
+  const [previewImage, setPreviewImage] = useState(null); // for showing image preview
 
   useEffect(() => {
     if (post) {
@@ -16,9 +16,9 @@ const PostForm = ({ post, onSubmit, onClose }) => {
         title: post.title,
         content: post.content,
         category: post.category || 'other',
-        image: null // تهيئة الصورة الجديدة كـ null
+        image: null
       });
-      // إذا كان هناك صورة قديمة، يتم عرضها كمعاينة
+      // if there's an old image, show it as preview
       if (post.image) {
         setPreviewImage(post.image);
       } else {
@@ -27,23 +27,21 @@ const PostForm = ({ post, onSubmit, onClose }) => {
     }
   }, [post]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     const formDataToSend = new FormData();
     formDataToSend.append('title', formData.title);
     formDataToSend.append('content', formData.content);
     formDataToSend.append('category', formData.category);
-    if (formData.image) {
-      formDataToSend.append('image', formData.image);
-    }
+    formDataToSend.append('image', formData.image);
     onSubmit(formDataToSend);
-  };
+  }
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData({ ...formData, image: file }); // تحديث بيانات النموذج بالصورة الجديدة
-      const imageUrl = URL.createObjectURL(file); // إنشاء معاينة للصورة
+      setFormData({ ...formData, image: file }); // update form data with new image
+      const imageUrl = URL.createObjectURL(file); // create image preview
       setPreviewImage(imageUrl);
     }
   };
@@ -54,10 +52,10 @@ const PostForm = ({ post, onSubmit, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg w-full max-w-md p-6">
         <h2 className="text-xl font-semibold mb-4">
-          {post ? 'تعديل المنشور' : 'إضافة منشور جديد'}
+          {post ? 'Edit Post' : 'Add New Post'}
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* حقل العنوان */}
+        <form onSubmit={(event) => handleSubmit(event)} className="space-y-4">
+          {/* Title field */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
               العنوان
@@ -73,7 +71,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
             />
           </div>
 
-          {/* حقل المحتوى */}
+          {/* Content field */}
           <div>
             <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
               المحتوى
@@ -87,7 +85,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
             />
           </div>
 
-          {/* حقل التصنيف */}
+          {/* Category field */}
           <div>
             <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
               التصنيف
@@ -107,7 +105,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
             </select>
           </div>
 
-          {/* حقل رفع الصورة */}
+          {/* Image upload field */}
           <div>
             <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
               رفع صورة
@@ -130,7 +128,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
             )}
           </div>
 
-          {/* أزرار الإلغاء والنشر/التحديث */}
+          {/* Cancel and Publish/Update buttons */}
           <div className="flex justify-end gap-2 pt-4">
             <button
               type="button"
@@ -143,7 +141,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              {post ? 'تحديث' : 'نشر'}
+              {post ? 'Update' : 'Publish'}
             </button>
           </div>
         </form>

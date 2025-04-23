@@ -2,13 +2,13 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000';
 
-const TEMP_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZmZlY2MxNDcyNDNjYWRjNTZkYjIzOCIsImlhdCI6MTc0NDg5NDU4MiwiZXhwIjoxNzQ0OTgwOTgyfQ.V8UYD5rUEofGNjj08gBYExfu0Ca2vcNHT_fdOhx379o';
+const token = localStorage.getItem('token');
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${TEMP_TOKEN}`
+    'Authorization': `Bearer ${token}`
   }
 });
 
@@ -17,7 +17,7 @@ export const getUserProfile = async () => {
     const response = await api.get('/users/profile');
     return response.data;
   } catch (error) {
-    throw new Error('فشل في جلب بيانات المستخدم');
+    throw new Error('Failed to fetch user data');
   }
 };
 
@@ -26,7 +26,7 @@ export const updateUserProfile = async (userData) => {
     const response = await api.put('/users/profile', userData);
     return response.data;
   } catch (error) {
-    throw new Error('فشل في تحديث بيانات المستخدم');
+    throw new Error('Failed to update user data');
   }
 };
 
@@ -35,7 +35,7 @@ export const getPosts = async () => {
     const response = await api.get('/api/posts');
     return response.data;
   } catch (error) {
-    throw new Error('فشل في جلب المنشورات');
+    throw new Error('Failed to fetch posts');
   }
 };
 
@@ -44,7 +44,7 @@ export const getUserPosts = async () => {
     const response = await api.get('/api/posts/user');
     return response.data;
   } catch (error) {
-    throw new Error('فشل في جلب منشورات المستخدم');
+    throw new Error('Failed to fetch user posts');
   }
 };
 
@@ -53,12 +53,12 @@ export const createPost = async (formData) => {
     const response = await api.post('/api/posts', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${TEMP_TOKEN}`
+        'Authorization': `Bearer ${token}`
       }
     });
     return response.data;
   } catch (error) {
-    throw new Error('فشل في إنشاء المنشور');
+    throw new Error('Failed to create post');
   }
 };
 
@@ -66,12 +66,13 @@ export const updatePost = async (postId, formData) => {
   try {
     const response = await api.put(`/api/posts/${postId}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` // تأكد من إضافة التوكن هنا
       }
     });
     return response.data;
   } catch (error) {
-    throw new Error('فشل في تحديث المنشور');
+    throw new Error(`Failed to update post: ${error.response.data.message || error.message}`);
   }
 };
 
@@ -79,6 +80,6 @@ export const deletePost = async (postId) => {
   try {
     await api.delete(`/api/posts/${postId}`);
   } catch (error) {
-    throw new Error('فشل في حذف المنشور');
+    throw new Error('Failed to delete post');
   }
 };
