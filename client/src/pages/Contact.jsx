@@ -50,6 +50,8 @@ function Contact () {
                         onSubmit={(values, actions) => {
                             console.log(values);
                             actions.setSubmitting(false);
+                            actions.resetForm();
+
                         }}
                     >
                     {({ isSubmitting }) => (
