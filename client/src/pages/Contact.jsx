@@ -45,13 +45,21 @@ function Contact () {
                     viewport={{once: true}}
                 >
                     <h2 className="text-[40px] uppercase font-[400] p-5">Send us a Message</h2>
-                    <Formik>
+                    <Formik
+                         initialValues={{name: "", city: "", email: "", message: ""}}
+                        onSubmit={(values, actions) => {
+                            console.log(values);
+                            actions.setSubmitting(false);
+                            actions.resetForm();
+
+                        }}
+                    >
                     {({ isSubmitting }) => (
                         <Form className="flex flex-col p-5">
-                            <Field className={inputClassName} type="text" name="name" placeholder="name" />
-                            <Field className={inputClassName} type="address" name="city" placeholder="city"/>
-                            <Field className={inputClassName} type="email" name="email" placeholder="email" />
-                            <Field className={`${inputClassName} pt-5 pb-20`} placeholder="message"/>
+                            <Field className={inputClassName} required type="text" name="name" placeholder="name" />
+                            <Field className={inputClassName} required type="address" name="city" placeholder="city"/>
+                            <Field className={inputClassName} required type="email" name="email" placeholder="email" />
+                            <Field className={`${inputClassName} pt-5 pb-20`} type="text" name="message" required placeholder="message"/>
                             <button type="submit" disabled={isSubmitting} className="ease-in-out bg-black hover:bg-white hover:text-black hover:border-2 hover:border-black w-[150px] font-medium text-[20px] text-center py-4 text-white rounded-xl">
                                 Submit
                             </button>
