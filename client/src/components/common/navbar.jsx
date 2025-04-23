@@ -35,7 +35,16 @@ function Navbar(){
                     <NavLink to="/signup" className={navlinkClassName}> Sign Up</NavLink>
                     <NavLink to="/login" className={navlinkClassName}> Sign In</NavLink>
                 </div>
-                <Formik>
+                <Formik
+                    initialValues={{Search: ""}}
+                    onSubmit={(values, actions) => {
+                    const query = values.Search.trim();
+                    if(query){
+                        navigate(`/category/${encodeURIComponent(query)}`)
+                    }
+                    actions.setSubmitting(false)
+                    }}
+                >
                     <Form className="relative hidden md:block ">
                         <Field type="search" name="Search" id="" className=" indent-0 bg-[#f5f7fa]  px-5 py-2 rounded-3xl outline-0 border border-slate-300 border-solid" placeholder="Type Something"/>
                         <Field type="submit" value="Search" className=" bg-black text-white indent-0 cursor-pointer absolute top-[1px] right-0 rounded-e-3xl py-2 px-3 outline-0"/>
