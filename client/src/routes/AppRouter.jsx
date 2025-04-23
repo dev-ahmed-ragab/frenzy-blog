@@ -8,9 +8,9 @@ const Contact = lazy(() => import("../pages/Contact"));
 const ArticleDetails = lazy(() => import("./../pages/ArticleDetails"));
 const SignUp = lazy(() => import("../Auth/SignUp"));
 const LogIn = lazy(() => import("../Auth/LogIn"));
-const Profile = lazy(() => "../pages/Profile");
+const Profile = lazy(() =>import( "../pages/Profile");
 const Posts = lazy(() => import("../pages/Posts"));
-const CategoryPage = lazy(() => ("../pages/CategoryPage"))
+const CategoryPage = lazy(() => import ("../pages/CategoryPage"));
 import { Provider } from "react-redux";
 import {store} from "../Redux/Store";
 import Loading from "../components/common/Loading";
