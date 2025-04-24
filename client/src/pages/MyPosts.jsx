@@ -70,7 +70,7 @@ const MyPosts = () => {
     <div className="mx-auto max-w-7xl p-4">
       {/* العنوان وزر إضافة بوست */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Posts</h1>
+        <h1 className="text-[60px] font-bold text-center m-auto uppercase p-5 text-[#d681d6]d">My Posts</h1>
         <button
           onClick={() => {
             setSelectedPost(null);
