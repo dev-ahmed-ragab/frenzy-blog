@@ -34,7 +34,7 @@ const Posts = () => {
     <div className="mx-auto max-w-7xl p-4">
       {/* العنوان */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Posts</h1>
+        <h1 className="text-[60px] font-bold text-center m-auto uppercase p-5 text-[#d681d6]">Posts</h1>
       </div>
 
       {/* رسالة الخطأ */}
