@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { getUserPosts, createPost, updatePost, deletePost } from "../services/api";
 import PostForm from "../components/PostForm";
+import Loading from "../components/common/Loading";
+
 
 const MyPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -61,7 +63,7 @@ const MyPosts = () => {
   };
 
   if (loading) {
-    return <div className="py-8 text-center">Loading...</div>;
+    return <div className="py-8 text-center"><Loading/></div>;
   }
 
   return (
