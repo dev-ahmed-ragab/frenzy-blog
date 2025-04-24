@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { getPosts } from "../services/api";
 import { Link } from "react-router-dom"; // استيراد Link من React Router
+import Loading from "../components/common/Loading";
+
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -25,7 +27,7 @@ const Posts = () => {
   }, []);
 
   if (loading) {
-    return <div className="py-8 text-center">Loading...</div>;
+    return <div className="py-8 text-center"><Loading/></div>;
   }
 
   return (
