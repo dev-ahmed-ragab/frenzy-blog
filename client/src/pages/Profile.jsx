@@ -122,11 +122,11 @@ const Profile = () => {
 
 
 
-      <div className="flex flex-col md:flex-row items-center gap-12">
+      <div className="flex flex-col md:flex-row items-center gap-6">
         <img
           src={avatarPreview? 'http://localhost:5000' + avatarPreview : admin}
           alt="profile"
-          className="w-64 h-64 rounded-full object-cover mb-9"
+          className="w-56 h-56 rounded-full object-cover mb-9"
         />
         <div className="flex-1 mb-12">
           <div className="mb-4 flex gap-5 items-center">
