@@ -2,10 +2,10 @@
   "name": "blog",
   "version": "1.0.0",
   "description": "Blog backend API with Node.js, Express, and MongoDB",
-  "main": "src/index.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node index.js"
   },
   "keywords": [
     "blog",

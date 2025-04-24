@@ -4,9 +4,9 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import connectDB from './config/database.js';
-import userRoutes from './routes/userRoutes.js';
-import postsRouter from './routes/posts.js';
+import connectDB from './src/config/database.js';
+import userRoutes from './src/routes/userRoutes.js';
+import postsRouter from './src/routes/posts.js';
 
 // Load environment variables
 dotenv.config();
@@ -32,7 +32,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/users', userRoutes);
@@ -42,5 +42,5 @@ app.use('/api/posts', postsRouter);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log(`Uploads directory: ${path.join(__dirname, '../uploads')}`);
+  console.log(`Uploads directory: ${path.join(__dirname, 'uploads')}`);
 });
