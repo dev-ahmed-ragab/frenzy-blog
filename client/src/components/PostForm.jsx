@@ -49,7 +49,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
   const categories = ['frontend', 'backend', 'fullstack', 'devops', 'database', 'other'];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 overflow-auto">
       <div className="bg-white rounded-lg w-full max-w-md p-6">
         <h2 className="text-xl font-semibold mb-4">
           {post ? 'Edit Post' : 'Add New Post'}
