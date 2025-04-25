@@ -1,6 +1,6 @@
 [build]
   base = "server"
-  command = "npm install"
+  command = "npm install && npm run build"
   functions = "functions"
 
 [build.environment]
