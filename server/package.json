@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "mkdir -p dist && cp -r src package.json index.js .env dist/"
+    "build": "mkdir -p dist && cp -r src functions package.json index.js .env dist/ && cd dist && npm install --production"
   },
   "keywords": [
     "blog",
@@ -26,7 +26,8 @@
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
-    "multer": "^1.4.5-lts.2"
+    "multer": "^1.4.5-lts.2",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
