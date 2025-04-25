@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { getUserPosts, createPost, updatePost, deletePost } from "../services/api";
 import PostForm from "../components/PostForm";
+import Loading from "../components/common/Loading";
+
 
 const MyPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -61,14 +63,14 @@ const MyPosts = () => {
   };
 
   if (loading) {
-    return <div className="py-8 text-center">Loading...</div>;
+    return <div className="py-8 text-center"><Loading/></div>;
   }
 
   return (
     <div className="mx-auto max-w-7xl p-4">
       {/* العنوان وزر إضافة بوست */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Posts</h1>
+        <h1 className="text-[60px] font-bold text-center m-auto uppercase p-5 text-[#d681d6]d">My Posts</h1>
         <button
           onClick={() => {
             setSelectedPost(null);

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { getPosts } from "../services/api";
 import { Link } from "react-router-dom"; // استيراد Link من React Router
+import Loading from "../components/common/Loading";
+
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -25,14 +27,14 @@ const Posts = () => {
   }, []);
 
   if (loading) {
-    return <div className="py-8 text-center">Loading...</div>;
+    return <div className="py-8 text-center"><Loading/></div>;
   }
 
   return (
     <div className="mx-auto max-w-7xl p-4">
       {/* العنوان */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Posts</h1>
+        <h1 className="text-[60px] font-bold text-center m-auto uppercase p-5 text-[#d681d6]">Posts</h1>
       </div>
 
       {/* رسالة الخطأ */}
