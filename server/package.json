@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "mkdir -p dist && cp -r src package.json index.js .env dist/"
   },
   "keywords": [
     "blog",

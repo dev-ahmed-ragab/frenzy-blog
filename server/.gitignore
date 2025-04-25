@@ -1,13 +1,21 @@
-# تجاهل الملفات والمجلدات غير الضرورية للخادم:
-node_modules/       # تجاهل مجلد التبعيات
-# .env                # تجاهل ملفات البيئة
-.env.local          # تجاهل ملفات البيئة المحلية
-npm-debug.log       # تجاهل ملفات تصحيح أخطاء npm
-yarn-error.log      # تجاهل ملفات تصحيح أخطاء Yarn
-uploads/            # تجاهل مجلد الرفع (إذا كان موجودًا)
-.DS_Store           # تجاهل ملفات macOS
-*.log               # تجاهل جميع ملفات السجل
-dist/               # تجاهل مجلد الإنتاج (إذا كنت تستخدم أدوات مثل TypeScript)
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
 dev.env
-node_modules
-# .env
+
+# Logs
+npm-debug.log
+yarn-error.log
+*.log
+
+# Build output
+dist/
+
+# System files
+.DS_Store
+
+# Uploads
+uploads/

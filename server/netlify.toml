@@ -1,0 +1,22 @@
+[build]
+  base = "server"
+  command = "npm install && npm run build"
+  publish = "dist"
+  functions = "functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[functions]
+  directory = "functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[dev]
+  command = "npm run dev"
+  port = 8888
+  targetPort = 3000
