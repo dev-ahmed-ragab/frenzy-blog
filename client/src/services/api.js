@@ -64,15 +64,29 @@ export const createPost = async (formData) => {
 
 export const updatePost = async (postId, formData) => {
   try {
+    // التحقق من وجود البيانات المطلوبة
+    if (!formData.get('title') || !formData.get('content') || !formData.get('category')) {
+      throw new Error('Missing required fields');
+    }
+
+    // إرسال الطلب مع الإعدادات الصحيحة
     const response = await api.put(`/api/posts/${postId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${localStorage.getItem('token')}` // تأكد من إضافة التوكن هنا
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
     });
+    
     return response.data;
   } catch (error) {
-    throw new Error(`Failed to update post: ${error.response.data.message || error.message}`);
+    // معالجة أنواع مختلفة من الأخطاء
+    if (error.response) {
+      throw new Error(`Server error: ${error.response.data.message || error.response.statusText}`);
+    } else if (error.request) {
+      throw new Error('Network error: Could not connect to server');
+    } else {
+      throw new Error(`Update failed: ${error.message}`);
+    }
   }
 };
 
@@ -82,4 +96,18 @@ export const deletePost = async (postId) => {
   } catch (error) {
     throw new Error('Failed to delete post');
   }
-};
+}
+
+// Add a request interceptor to include the token dynamically
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);

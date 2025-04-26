@@ -27,14 +27,61 @@ const PostForm = ({ post, onSubmit, onClose }) => {
     }
   }, [post]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const formDataToSend = new FormData();
-    formDataToSend.append('title', formData.title);
-    formDataToSend.append('content', formData.content);
-    formDataToSend.append('category', formData.category);
-    formDataToSend.append('image', formData.image);
-    onSubmit(formDataToSend);
+    try {
+      // Validate required fields
+      if (!formData.title.trim()) {
+        alert('Post title is required');
+        return;
+      }
+      if (!formData.content.trim()) {
+        alert('Post content is required');
+        return;
+      }
+      if (!formData.category) {
+        alert('Post category is required');
+        return;
+      }
+
+      const formDataToSend = new FormData();
+      
+      // Add basic data
+      formDataToSend.append('title', formData.title.trim());
+      formDataToSend.append('content', formData.content.trim());
+      formDataToSend.append('category', formData.category);
+      
+      // Handle image
+      if (formData.image) {
+        // Check image size and format
+        if (formData.image.size > 5 * 1024 * 1024) { // 5MB
+          alert('Image size must be less than 5MB');
+          return;
+        }
+        formDataToSend.append('image', formData.image);
+      }
+      
+      // If this is an update to an existing post
+      if (post) {
+        formDataToSend.append('postId', post._id);
+        // If no new image is uploaded, keep the old image
+        if (!formData.image && post.imageUrl) {
+          formDataToSend.append('imageUrl', post.imageUrl);
+        }
+      }
+
+      // Log post data to console for verification
+      const formDataObj = {};
+      for (let [key, value] of formDataToSend.entries()) {
+        formDataObj[key] = value;
+      }
+      console.log('Post data before sending:', formDataObj);
+      
+      await onSubmit(formDataToSend);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert(error.message || 'An error occurred while saving the post');
+    }
   }
 
   const handleImageChange = (e) => {
@@ -58,7 +105,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
           {/* Title field */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-              العنوان
+              Title
             </label>
             <input
               type="text"
@@ -74,7 +121,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
           {/* Content field */}
           <div>
             <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-              المحتوى
+              Content
             </label>
             <textarea
               id="content"
@@ -88,7 +135,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
           {/* Category field */}
           <div>
             <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-              التصنيف
+              Category
             </label>
             <select
               id="category"
@@ -108,7 +155,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
           {/* Image upload field */}
           <div>
             <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-              رفع صورة
+              Upload Image
             </label>
             <input
               type="file"
@@ -135,7 +182,7 @@ const PostForm = ({ post, onSubmit, onClose }) => {
               onClick={onClose}
               className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
             >
-              إلغاء
+              Cancel
             </button>
             <button
               type="submit"
