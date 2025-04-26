@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Formik, Form, Field } from "formik";
-import { Menu, User, LogOut, Search } from 'lucide-react';
+import { Menu, User, LogOut } from 'lucide-react';
 import { AnimatePresence, easeInOut, motion } from "motion/react"
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../Redux/UserSlice';
@@ -14,13 +13,11 @@ function Navbar(){
     const dispatch = useDispatch();
     const [openMenu, setOpenMenu] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
-    const [openSearch, setOpenSearch] = useState(false);
     const { token, username } = useSelector((state) => state.user);
 
     const closeAllMenus = () => {
         setOpenMenu(false);
         setOpenDropdown(false);
-        setOpenSearch(false);
     };
 
     const toggleMenu = () => {
@@ -31,10 +28,7 @@ function Navbar(){
         closeAllMenus();
         setOpenDropdown(true);
     };
-    const toggleSearch = () => {
-        closeAllMenus();
-        setOpenSearch(true);
-    };
+
     const navlinkClassName = ({isActive}) => isActive? "active text-[#d681d6]": "text-black";
     const mobileNavlinkClassName = ({isActive}) => isActive? "active text-[#d681d6]": "text-white";
 
@@ -75,19 +69,6 @@ function Navbar(){
                     <NavLink to="/contact" className={navlinkClassName}>Contact </NavLink>
                 </div>
                 <div className="hidden lg:flex items-center gap-4">
-                    <Formik>
-                        <Form className="relative">
-                            <Field 
-                                type="search" 
-                                name="Search" 
-                                className="w-full indent-0 bg-[#f5f7fa] px-5 py-2 rounded-3xl outline-0 border border-slate-300 border-solid" 
-                                placeholder="Search here..."
-                            />
-                            <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2">
-                                <Search size={20} />
-                            </button>
-                        </Form>
-                    </Formik>
                     {!token ? (
                         <div className="flex gap-4">
                             <NavLink to="/signup" className={navlinkClassName}> Sign Up</NavLink>
@@ -135,21 +116,7 @@ function Navbar(){
                         exit={{opacity: 0, y: -20}}
                         transition={{duration: 0.5, ease: "easeInOut"}}
                         className="lg:hidden flex flex-col font-bold z-50 absolute top-36 right-8 bg-black p-8 items-center gap-2 rounded-xl">
-                        <div className="relative w-full mb-4">
-                            <Formik>
-                                <Form className="relative">
-                                    <Field 
-                                        type="search" 
-                                        name="Search" 
-                                        className="w-full indent-0 bg-[#f5f7fa] px-5 py-2 rounded-3xl outline-0 border border-slate-300 border-solid" 
-                                        placeholder="Search here..."
-                                    />
-                                    <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2">
-                                        <Search size={20} />
-                                    </button>
-                                </Form>
-                            </Formik>
-                        </div>
+
                         <NavLink to="/" onClick={toggleMenu} className={mobileNavlinkClassName}>Home</NavLink>
                         <NavLink to="/about" onClick={toggleMenu} className={mobileNavlinkClassName}> About</NavLink>
                         <NavLink to="/contact" onClick={toggleMenu} className={mobileNavlinkClassName}>Contact </NavLink>

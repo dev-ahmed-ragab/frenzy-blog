@@ -28,7 +28,7 @@ const AppRouter = () => {
                         <Route  path="/" element={<AppLayout/>}>
                             <Route index element={<Home/>}/>
                             <Route path="/about" element={<About/>}/>
-                            <Route path="/articleDetails" element={<ArticleDetails/>}/>
+                            <Route path="/articleDetails/:id" element={<ArticleDetails/>}/>
                             <Route path="/category/:categoryName" element={<CategoryPage />} />
                             <Route path="/Contact" element={<Contact/>}/>
                             <Route path="/profile" element={<Profile />} />
