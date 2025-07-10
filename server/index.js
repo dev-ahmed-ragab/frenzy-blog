@@ -7,9 +7,18 @@ import { fileURLToPath } from 'url';
 import connectDB from './src/config/database.js';
 import userRoutes from './src/routes/userRoutes.js';
 import postsRouter from './src/routes/posts.js';
+import { v2 as cloudinary } from 'cloudinary'; // إضافة Cloudinary
 
 // Load environment variables
 dotenv.config();
+
+// إعداد Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dn7s97ydy',
+  api_key: process.env.CLOUDINARY_API_KEY || '688869988867236',
+  api_secret:
+    process.env.CLOUDINARY_API_SECRET || 'JqtKvkamuw-nQ2u7xTVhXk6ULVY',
+});
 
 // Create Express app
 const app = express();
@@ -21,18 +30,10 @@ connectDB();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create uploads directory if it doesn't exist
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads');
-}
-
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/users', userRoutes);
@@ -42,5 +43,4 @@ app.use('/api/posts', postsRouter);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  console.log(`Uploads directory: ${path.join(__dirname, 'uploads')}`);
 });

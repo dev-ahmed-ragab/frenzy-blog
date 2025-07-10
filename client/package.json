@@ -40,8 +40,7 @@
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "format": "prettier --write \\\"src/**/*.{js,jsx}\\\"",
-    "start": "node server/src/index.js"
+    "format": "prettier --write \\\"src/**/*.{js,jsx}\\\""
   },
   "type": "module",
   "version": "0.0.0"

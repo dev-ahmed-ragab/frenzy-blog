@@ -1,11 +1,15 @@
 import Post from '../models/Post.js';
 import { validationResult } from 'express-validator';
 import { Types } from 'mongoose';
+import { v2 as cloudinary } from 'cloudinary';
+import streamifier from 'streamifier';
 
 // Get all posts
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate('author', 'username').sort({ createdAt: -1 });
+    const posts = await Post.find()
+      .populate('author', 'username')
+      .sort({ createdAt: -1 });
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -15,7 +19,10 @@ export const getAllPosts = async (req, res) => {
 // Get single post
 export const getPostById = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).populate('author', 'username');
+    const post = await Post.findById(req.params.id).populate(
+      'author',
+      'username'
+    );
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
@@ -31,33 +38,53 @@ export const createPost = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const errorMessages = {};
-      errors.array().forEach(error => {
+      errors.array().forEach((error) => {
         errorMessages[error.param] = error.msg;
       });
       return res.status(400).json({ errors: errorMessages });
     }
 
-    // Ensure that the data is being sent correctly in the request
-const { title, content, category } = req.body;
+    const { title, content, category } = req.body;
     const missingFields = [];
     if (!title) missingFields.push('عنوان المنشور');
     if (!content) missingFields.push('محتوى المنشور');
     if (!category) missingFields.push('تصنيف المنشور');
-    
+
     if (missingFields.length > 0) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'الحقول التالية مطلوبة:',
-        fields: missingFields
+        fields: missingFields,
       });
     }
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+    let imageUrl = null;
+    let publicId = null;
+    if (req.file) {
+      // استخدام Promise للرفع
+      const uploadPromise = () =>
+        new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'frenzy', resource_type: 'image' },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            }
+          );
+          streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        });
+
+      const result = await uploadPromise();
+      imageUrl = result.secure_url;
+      publicId = result.public_id;
+    }
 
     const post = new Post({
       title,
       content,
       category,
       imageUrl,
-      author: req.user._id
+      publicId,
+      author: req.user._id,
     });
 
     const savedPost = await post.save();
@@ -67,19 +94,16 @@ const { title, content, category } = req.body;
   }
 };
 
-// Get user posts (الحفاظ على النقطة الحالية)
+// Get user posts
 export const getUserPosts = async (req, res) => {
   try {
     const userId = req.user._id;
     if (!Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
-    console.log('User ID:', req.user._id);
-    console.log('Request Headers:', req.headers);
-
-    const posts = await Post.find({ author: req.user._id })
-      .sort({ createdAt: -1 });
-    
+    const posts = await Post.find({ author: req.user._id }).sort({
+      createdAt: -1,
+    });
     res.json(posts);
   } catch (error) {
     console.error('Error in getUserPosts:', error);
@@ -93,42 +117,70 @@ export const updatePost = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const errorMessages = {};
-      errors.array().forEach(error => {
+      errors.array().forEach((error) => {
         errorMessages[error.param] = error.msg;
       });
       return res.status(400).json({ errors: errorMessages });
     }
 
-    // Ensure that the data is being sent correctly in the request
-const { title, content, category } = req.body;
+    const { title, content, category } = req.body;
     const missingFields = [];
     if (!title) missingFields.push('عنوان المنشور');
     if (!content) missingFields.push('محتوى المنشور');
     if (!category) missingFields.push('تصنيف المنشور');
-    
+
     if (missingFields.length > 0) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'الحقول التالية مطلوبة:',
-        fields: missingFields
+        fields: missingFields,
       });
     }
+
     const updateData = { title, content, category };
-    
+    let publicId = null;
+
     if (req.file) {
-      updateData.imageUrl = `/uploads/${req.file.filename}`;
+      // رفع الصورة الجديدة إلى Cloudinary
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: 'posts', resource_type: 'image' },
+        (error, result) => {
+          if (error) {
+            console.error('Cloudinary upload error:', error);
+            throw new Error('Failed to upload image');
+          }
+          updateData.imageUrl = result.secure_url;
+          publicId = result.public_id;
+        }
+      );
+
+      // تحويل الـ buffer إلى stream ورفعه
+      await new Promise((resolve, reject) => {
+        streamifier
+          .createReadStream(req.file.buffer)
+          .pipe(uploadStream)
+          .on('finish', resolve)
+          .on('error', reject);
+      });
+
+      // حذف الصورة القديمة من Cloudinary إذا وجدت
+      const post = await Post.findById(req.params.id);
+      if (post.publicId) {
+        await cloudinary.uploader.destroy(post.publicId);
+      }
+      updateData.publicId = publicId; // تحديث publicId
     }
 
-    const post = await Post.findOneAndUpdate(
+    const updatedPost = await Post.findOneAndUpdate(
       { _id: req.params.id },
       updateData,
       { new: true }
     );
 
-    if (!post) {
+    if (!updatedPost) {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    res.json(post);
+    res.json(updatedPost);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -140,6 +192,10 @@ export const deletePost = async (req, res) => {
     const post = await Post.findByIdAndDelete(req.params.id);
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
+    }
+    // حذف الصورة من Cloudinary إذا وجدت
+    if (post.publicId) {
+      await cloudinary.uploader.destroy(post.publicId);
     }
     res.json({ message: 'Post deleted successfully' });
   } catch (error) {
