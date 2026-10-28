@@ -22,38 +22,75 @@ cloudinary.config({
 // Create Express app
 const app = express();
 
-// Connect to MongoDB
-connectDB();
-
-// Get directory name (ES modules)
+// ES module path resolution
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ensure uploads directory exists
+// Safe uploads directory handling for serverless & local
 const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (err) {
+  // Read-only filesystem on serverless environments like Vercel Lambda
+  console.warn('Note: Read-only filesystem detected, uploads directory creation skipped');
 }
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Database connection middleware for serverless invocations
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+  } catch (err) {
+    console.error('Database connection middleware error:', err);
+  }
+  next();
+});
+
 // Serve uploaded static files
-app.use('/uploads', express.static(uploadsDir));
+try {
+  app.use('/uploads', express.static(uploadsDir));
+} catch (err) {
+  console.warn('Uploads static route error:', err);
+}
 
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postsRouter);
 
-// Root route check
+// Health check / root route
 app.get('/', (req, res) => {
-  res.json({ message: 'Frenzy Blog API is running' });
+  res.json({
+    status: 'success',
+    message: 'Frenzy Blog API is running smoothly',
+    timestamp: new Date().toISOString(),
+  });
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled API Error:', err);
+  res.status(err.status || 500).json({
+    error: 'Server Error',
+    message: err.message || 'Something went wrong',
+  });
 });
+
+// Start local server if not running in Vercel Serverless environment
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+// Default export required for Vercel Serverless Functions (@vercel/node)
+export default app;

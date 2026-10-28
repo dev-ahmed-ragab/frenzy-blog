@@ -1,19 +1,27 @@
 import mongoose from 'mongoose';
 
-const connectDB = async () => {
-  try {
-    if (!process.env.MONGODB_URI) {
-      throw new Error('MONGODB_URI environment variable is not defined');
-    }
+let isConnected = false;
 
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+const connectDB = async () => {
+  if (isConnected || mongoose.connection.readyState >= 1) {
+    return;
+  }
+
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.warn('⚠️ MONGODB_URI environment variable is not defined.');
+    return;
+  }
+
+  try {
+    const conn = await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 8000,
     });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    isConnected = true;
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`MongoDB Connection Error: ${error.message}`);
-    process.exit(1);
+    console.error(`❌ MongoDB Connection Error: ${error.message}`);
+    // Do not terminate process with exit(1) on serverless environments!
   }
 };
 
