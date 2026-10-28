@@ -22,9 +22,14 @@ cloudinary.config({
 // Create Express app
 const app = express();
 
-// ES module path resolution
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// ES module path resolution with safe fallback
+let __dirname = process.cwd();
+try {
+  const __filename = fileURLToPath(import.meta.url);
+  __dirname = path.dirname(__filename);
+} catch (e) {
+  // Safe fallback for serverless bundlers
+}
 
 // Safe uploads directory handling for serverless & local
 const uploadsDir = path.join(__dirname, 'uploads');
