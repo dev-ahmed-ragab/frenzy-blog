@@ -222,3 +222,4 @@ Use these pre-seeded accounts to explore publishing and author features:
 ## 📄 License
 
 This project is open-source and available under the [ISC License](LICENSE).
+
