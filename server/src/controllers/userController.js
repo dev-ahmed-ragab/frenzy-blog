@@ -4,6 +4,16 @@ import { validationResult } from 'express-validator';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // @desc    Register a new user
 // @route   POST /api/users/register
@@ -27,7 +37,7 @@ export const registerUser = async (req, res) => {
     const user = await User.create({
       username,
       email,
-      password
+      password,
     });
 
     if (user) {
@@ -35,12 +45,12 @@ export const registerUser = async (req, res) => {
         _id: user._id,
         username: user.username,
         email: user.email,
-        avatar: user.avatar,
-        token: generateToken(user._id)
+        avatar: user.avatarUrl || null,
+        token: generateToken(user._id),
       });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -72,10 +82,11 @@ export const loginUser = async (req, res) => {
       _id: user._id,
       username: user.username,
       email: user.email,
-      token: generateToken(user._id)
+      avatar: user.avatarUrl || null,
+      token: generateToken(user._id),
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -90,40 +101,39 @@ export const getUserProfile = async (req, res) => {
         _id: user._id,
         username: user.username,
         email: user.email,
-        avatar: user.avatarUrl,
-        
+        avatar: user.avatarUrl || null,
       });
     } else {
       res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
-}; 
+};
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`);
-  }
+    cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`);
+  },
 });
 
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png|gif/;
+    const filetypes = /jpeg|jpg|png|gif|webp/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = filetypes.test(file.mimetype);
     if (extname && mimetype) {
       return cb(null, true);
     } else {
-      cb('Error: Images Only!');
+      cb(new Error('Images only (jpeg, jpg, png, gif, webp)!'));
     }
-  }
+  },
 });
 
 // @desc    Update user data
@@ -142,20 +152,21 @@ export const updateUser = async (req, res) => {
     if (user) {
       user.username = username || user.username;
       user.email = email || user.email;
-      if (password) {
+      if (password && password.trim().length >= 6) {
         user.password = password;
       }
       const updatedUser = await user.save();
       res.json({
         _id: updatedUser._id,
         username: updatedUser.username,
-        email: updatedUser.email
+        email: updatedUser.email,
+        avatar: updatedUser.avatarUrl || null,
       });
     } else {
       res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -189,15 +200,22 @@ export const uploadAvatar = async (req, res) => {
 
     upload.single('avatar')(req, res, async (err) => {
       if (err) {
-        return res.status(400).json({ message: err });
+        return res.status(400).json({ message: err.message || 'File upload failed' });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: 'Please provide an image file' });
       }
 
       if (user.avatarUrl) {
-        // Delete old avatar
-        const oldPath = path.join(path.dirname(new URL(import.meta.url).pathname), '../../uploads', path.basename(user.avatarUrl));
-        fs.unlink(oldPath, (err) => {
-          if (err) console.error(err);
-        });
+        // Delete old avatar if local file exists
+        const oldFile = path.basename(user.avatarUrl);
+        const oldPath = path.join(uploadsDir, oldFile);
+        if (fs.existsSync(oldPath)) {
+          fs.unlink(oldPath, (unlinkErr) => {
+            if (unlinkErr) console.error('Error deleting old avatar:', unlinkErr);
+          });
+        }
       }
 
       user.avatarUrl = `/uploads/${req.file.filename}`;
@@ -205,6 +223,6 @@ export const uploadAvatar = async (req, res) => {
       res.json({ avatarUrl: user.avatarUrl });
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

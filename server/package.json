@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "seed": "node src/scripts/seed.js",
+    "export:data": "node src/scripts/export.js",
     "build": "mkdir -p dist && cp -r src functions package.json index.js .env dist/ && cd dist && npm install --production"
   },
   "keywords": [

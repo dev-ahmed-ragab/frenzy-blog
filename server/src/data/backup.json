@@ -1,0 +1,187 @@
+{
+  "exportedAt": "2026-10-28T19:18:54.390Z",
+  "totalUsers": 2,
+  "totalPosts": 10,
+  "users": [
+    {
+      "_id": "6ae24a8ea1850ee8fafd3d10",
+      "username": "ahmed_dev",
+      "email": "ahmed@frenzy.dev",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+      "createdAt": "2026-10-28T19:18:38.347Z",
+      "updatedAt": "2026-10-28T19:18:38.347Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ae24a8ea1850ee8fafd3d12",
+      "username": "sarah_tech",
+      "email": "sarah@frenzy.dev",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=80",
+      "createdAt": "2026-10-28T19:18:38.483Z",
+      "updatedAt": "2026-10-28T19:18:38.483Z",
+      "__v": 0
+    }
+  ],
+  "posts": [
+    {
+      "_id": "6ae24a8ea1850ee8fafd3d14",
+      "title": "Modern Frontend Development: Building Reactive SPAs with React & Vite",
+      "content": "# Modern Frontend Development: Building Reactive SPAs with React & Vite\n\nFrontend web development in 2026 demands rapid build times, instantaneous Hot Module Replacement (HMR), and lean production bundles. Vite paired with React delivers just that.\n\n---\n\n## 1. Why Choose Vite over Legacy Bundlers?\n\nHistorically, Webpack served as the backbone of single-page applications. However, as applications scaled to hundreds of modules, cold-start times increased significantly.\n\n* **Lightning-fast Dev Server:** Leveraging native ES modules in the browser.\n* **Instant HMR:** Only the modified component reloads without resetting application state.\n* **Optimized Rollup Production Builds:** Tree-shaking and minification out of the box.\n\n### Quick Example: Custom Hook for API Data\n\n```javascript\nimport { useState, useEffect } from 'react';\n\nexport function useFetch(url) {\n  const [data, setData] = useState(null);\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState(null);\n\n  useEffect(() => {\n    let isMounted = true;\n    fetch(url)\n      .then(res => res.json())\n      .then(json => {\n        if (isMounted) {\n          setData(json);\n          setLoading(false);\n        }\n      })\n      .catch(err => {\n        if (isMounted) {\n          setError(err);\n          setLoading(false);\n        }\n      });\n\n    return () => { isMounted = false; };\n  }, [url]);\n\n  return { data, loading, error };\n}\n```\n\n> **Key Takeaway:** Clean architecture and separation of concerns allow SPAs to scale gracefully as your engineering team grows.",
+      "category": "frontend",
+      "imageUrl": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1000&auto=format&fit=crop&q=80",
+      "publicId": null,
+      "author": {
+        "_id": "6ae24a8ea1850ee8fafd3d10",
+        "username": "ahmed_dev",
+        "email": "ahmed@frenzy.dev"
+      },
+      "createdAt": "2026-10-28T19:18:38.609Z",
+      "updatedAt": "2026-10-28T19:18:38.609Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ae24a8ea1850ee8fafd3d16",
+      "title": "Architecting Scalable REST APIs with Node.js, Express & Clean Layering",
+      "content": "# Architecting Scalable REST APIs with Node.js & Express\n\nBuilding a production-ready backend is not merely about stitching routes together. It requires clean layering, defensive programming, and centralized error handling.\n\n---\n\n## Core Architecture Layers\n\n1. **Routing Layer:** Defines HTTP methods and endpoints.\n2. **Controller Layer:** Parses incoming request payloads and orchestrates responses.\n3. **Service Layer:** Houses pure business logic, validations, and third-party integrations.\n4. **Data Access Layer:** Interfaces directly with MongoDB via Mongoose models.\n\n### Centralized Async Error Wrapper\n\n```javascript\nexport const asyncHandler = (fn) => (req, res, next) => {\n  Promise.resolve(fn(req, res, next)).catch(next);\n};\n```\n\n### Global Error Handling Middleware\n\n```javascript\napp.use((err, req, res, next) => {\n  const statusCode = err.statusCode || 500;\n  res.status(statusCode).json({\n    success: false,\n    message: err.message || 'Internal Server Error',\n    stack: process.env.NODE_ENV === 'production' ? null : err.stack,\n  });\n});\n```\n\n> **Best Practice:** Never return raw database errors to API consumers in production to prevent sensitive schema leakage.",
+      "category": "backend",
+      "imageUrl": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1000&auto=format&fit=crop&q=80",
+      "publicId": null,
+      "author": {
+        "_id": "6ae24a8ea1850ee8fafd3d12",
+        "username": "sarah_tech",
+        "email": "sarah@frenzy.dev"
+      },
+      "createdAt": "2026-10-28T19:18:38.678Z",
+      "updatedAt": "2026-10-28T19:18:38.678Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ae24a8ea1850ee8fafd3d18",
+      "title": "Mastering MongoDB Atlas: Indexing, Sharding & Aggregation Pipelines",
+      "content": "# Mastering MongoDB Atlas: Indexing & Performance Optimization\n\nNoSQL databases offer flexibility, but without proper indexing and schema discipline, queries quickly degrade into expensive collection scans (`COLLSCAN`).\n\n---\n\n## 1. Single Field vs Compound Indexes\n\nCreating an index tailored to your query patterns reduces query execution time from hundreds of milliseconds to under 2ms.\n\n```javascript\n// Compound index for queries filtering by category and sorting by creation date\npostSchema.index({ category: 1, createdAt: -1 });\n```\n\n## 2. Advanced Aggregation Pipelines\n\nAggregation pipelines process documents through multi-stage transformations:\n\n```javascript\nconst stats = await Post.aggregate([\n  { $match: { category: { $ne: 'other' } } },\n  {\n    $group: {\n      _id: '$category',\n      totalPosts: { $sum: 1 },\n      lastUpdated: { $max: '$updatedAt' },\n    },\n  },\n  { $sort: { totalPosts: -1 } },\n]);\n```\n\n* **Match early:** Filter out irrelevant documents as the first pipeline stage.\n* **Project judiciously:** Only pass required fields to downstream stages.",
+      "category": "database",
+      "imageUrl": "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=1000&auto=format&fit=crop&q=80",
+      "publicId": null,
+      "author": {
+        "_id": "6ae24a8ea1850ee8fafd3d10",
+        "username": "ahmed_dev",
+        "email": "ahmed@frenzy.dev"
+      },
+      "createdAt": "2026-10-28T19:18:38.743Z",
+      "updatedAt": "2026-10-28T19:18:38.743Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ae24a8ea1850ee8fafd3d1a",
+      "title": "CI/CD Pipelines & Containerization with Docker & GitHub Actions",
+      "content": "# CI/CD Pipelines & Containerization with Docker & GitHub Actions\n\nModern engineering organizations automate testing, security vulnerability scans, and deployments with robust CI/CD pipelines.\n\n---\n\n## Multi-Stage Dockerfile for Node.js\n\nMulti-stage builds keep production image sizes tiny by discarding build tools and dev dependencies.\n\n```dockerfile\n# Build Stage\nFROM node:20-alpine AS builder\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\n# Production Stage\nFROM node:20-alpine AS runner\nWORKDIR /app\nENV NODE_ENV=production\nCOPY package*.json ./\nRUN npm ci --only=production\nCOPY --from=builder /app/dist ./dist\nUSER node\nEXPOSE 5000\nCMD [\"node\", \"dist/index.js\"]\n```\n\n## GitHub Actions Workflow (.github/workflows/deploy.yml)\n\n```yaml\nname: Deploy Pipeline\non:\n  push:\n    branches: [main]\n\njobs:\n  test-and-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - run: npm ci\n      - run: npm test\n      - name: Trigger Production Deployment\n        run: echo \"Deploying artifact to production server...\"\n```",
+      "category": "devops",
+      "imageUrl": "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1000&auto=format&fit=crop&q=80",
+      "publicId": null,
+      "author": {
+        "_id": "6ae24a8ea1850ee8fafd3d12",
+        "username": "sarah_tech",
+        "email": "sarah@frenzy.dev"
+      },
+      "createdAt": "2026-10-28T19:18:38.808Z",
+      "updatedAt": "2026-10-28T19:18:38.808Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ae24a8ea1850ee8fafd3d1c",
+      "title": "The Fullstack Engineer Roadmap: Navigating Architecture & Scalability",
+      "content": "# The Fullstack Engineer Roadmap: Navigating Architecture & Scalability\n\nBeing a fullstack engineer means understanding how frontend UX decisions influence backend API latency, and how database indexing impacts UI responsiveness.\n\n---\n\n## Key Pillars for Fullstack Excellence\n\n1. **End-to-End Type Safety:** Sharing TypeScript models and DTOs between client and server.\n2. **State Management:** Decoupling server state (e.g., TanStack Query) from local UI state.\n3. **Resilient Authentication:** JWT access tokens coupled with secure HttpOnly refresh cookies.\n4. **Performance Monitoring:** Implementing OpenTelemetry and structured logging.\n\n> **Continuous Growth:** The best engineers focus on fundamental design principles—clean code, testability, and clear documentation—which outlive any specific framework.",
+      "category": "fullstack",
+      "imageUrl": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1000&auto=format&fit=crop&q=80",
+      "publicId": null,
+      "author": {
+        "_id": "6ae24a8ea1850ee8fafd3d10",
+        "username": "ahmed_dev",
+        "email": "ahmed@frenzy.dev"
+      },
+      "createdAt": "2026-10-28T19:18:38.879Z",
+      "updatedAt": "2026-10-28T19:18:38.879Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ae24a8ea1850ee8fafd3d1e",
+      "title": "Deep Dive into TypeScript: Advanced Generics, Conditional Types & Mappings",
+      "content": "# Deep Dive into TypeScript: Advanced Generics & Type Gymnastics\n\nTypeScript has evolved from simple type annotations into an expressive type system capable of modeling complex runtime behavior statically.\n\n---\n\n## 1. Generic Constraints & Default Parameters\n\nGenerics allow us to write reusable, flexible code while preserving precise type information.\n\n```typescript\ninterface Entity {\n  id: string | number;\n}\n\nfunction updateEntity<T extends Entity>(collection: T[], id: T['id'], updates: Partial<T>): T[] {\n  return collection.map(item => item.id === id ? { ...item, ...updates } : item);\n}\n```\n\n## 2. Conditional Types & the `infer` Keyword\n\nConditional types allow us to compute types dynamically based on boolean type conditions:\n\n```typescript\ntype Flatten<T> = T extends Array<infer Item> ? Item : T;\n\ntype StrArray = Flatten<string[]>; // string\ntype SingleNum = Flatten<number>;   // number\n```\n\n## 3. Template Literal Types for Type-Safe Events\n\n```typescript\ntype EventName = 'click' | 'focus' | 'blur';\ntype EventHandler = `on${Capitalize<EventName>}`; // \"onClick\" | \"onFocus\" | \"onBlur\"\n```\n\n> **Pro Tip:** Avoid over-engineering types when simple interfaces suffice. Readable code with solid runtime tests is always better than esoteric type puzzles.",
+      "category": "frontend",
+      "imageUrl": "https://images.unsplash.com/photo-1516116211227-bbc0429f57fa?w=1000&auto=format&fit=crop&q=80",
+      "publicId": null,
+      "author": {
+        "_id": "6ae24a8ea1850ee8fafd3d12",
+        "username": "sarah_tech",
+        "email": "sarah@frenzy.dev"
+      },
+      "createdAt": "2026-10-28T19:18:38.944Z",
+      "updatedAt": "2026-10-28T19:18:38.944Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ae24a8fa1850ee8fafd3d20",
+      "title": "Designing Event-Driven Microservices with Redis, RabbitMQ & Node.js",
+      "content": "# Designing Event-Driven Microservices: Asynchronous Messaging at Scale\n\nMonolithic architectures eventually reach boundaries where horizontal scaling becomes inefficient. Event-driven architectures decouple services and provide elasticity.\n\n---\n\n## 1. Synchronous HTTP vs Asynchronous Messaging\n\n| Dimension | Synchronous (HTTP / REST) | Asynchronous (Message Broker) |\n| :--- | :--- | :--- |\n| **Coupling** | High (Caller must wait) | Loose (Fire and forget) |\n| **Resilience** | Cascade failures possible | Buffers spikes with queues |\n| **Latency** | Immediate round-trip | Sub-millisecond queue ingest |\n\n## 2. Implementing a Redis Pub/Sub Event Producer\n\n```javascript\nimport { createClient } from 'redis';\n\nconst publisher = createClient({ url: process.env.REDIS_URL });\nawait publisher.connect();\n\nexport async function publishEvent(channel, payload) {\n  const event = {\n    eventId: crypto.randomUUID(),\n    timestamp: new Date().toISOString(),\n    data: payload,\n  };\n  await publisher.publish(channel, JSON.stringify(event));\n  console.log(`[Event Published] Channel: ${channel}`);\n}\n```\n\n## 3. Ensuring Idempotency\n\nNetwork retries can result in duplicate events. Always maintain an `idempotencyKey` or check a distributed lock in Redis before executing side effects.",
+      "category": "backend",
+      "imageUrl": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1000&auto=format&fit=crop&q=80",
+      "publicId": null,
+      "author": {
+        "_id": "6ae24a8ea1850ee8fafd3d10",
+        "username": "ahmed_dev",
+        "email": "ahmed@frenzy.dev"
+      },
+      "createdAt": "2026-10-28T19:18:39.011Z",
+      "updatedAt": "2026-10-28T19:18:39.011Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ae24a8fa1850ee8fafd3d22",
+      "title": "SQL vs NoSQL in 2026: Trade-offs, ACID Guarantees & Polyglot Persistence",
+      "content": "# SQL vs NoSQL: Making the Right Architectural Choice\n\nChoosing between a relational database (like PostgreSQL) and a document store (like MongoDB) is not about popularity—it is about your data access patterns and integrity requirements.\n\n---\n\n## When to Choose PostgreSQL (SQL)\n\n* **Complex Multi-Table Joins:** Deeply normalized relations with strict foreign keys.\n* **ACID Transactions by Default:** Financial records, ledgers, and inventory checkout locks.\n* **Robust JSONB Support:** Postgres allows indexing JSON documents natively with GIN indexes.\n\n## When to Choose MongoDB (Document NoSQL)\n\n* **Document-Centric Access Patterns:** Articles with embedded comments, product catalogs with varying attributes.\n* **Rapid Iteration:** Schema evolution without complex migration locks.\n* **Horizontal Scaling:** Built-in automatic sharding across geographical regions.\n\n```javascript\n// Example: Atomic updates on sub-documents in MongoDB\nawait Post.updateOne(\n  { _id: postId },\n  { \n    $push: { comments: { text: 'Great article!', author: userId, createdAt: new Date() } },\n    $inc: { viewsCount: 1 }\n  }\n);\n```\n\n> **Summary:** Many modern companies use **Polyglot Persistence**: PostgreSQL for billing and authentication, and MongoDB or Redis for content feeds and session caching.",
+      "category": "database",
+      "imageUrl": "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=1000&auto=format&fit=crop&q=80",
+      "publicId": null,
+      "author": {
+        "_id": "6ae24a8ea1850ee8fafd3d12",
+        "username": "sarah_tech",
+        "email": "sarah@frenzy.dev"
+      },
+      "createdAt": "2026-10-28T19:18:39.078Z",
+      "updatedAt": "2026-10-28T19:18:39.078Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ae24a8fa1850ee8fafd3d24",
+      "title": "Kubernetes in Practice: Deploying, Scaling & Monitoring Cloud-Native Apps",
+      "content": "# Kubernetes in Practice: Production Orchestration Fundamentals\n\nKubernetes (K8s) automates the deployment, scaling, and operational management of containerized applications across compute clusters.\n\n---\n\n## 1. Anatomy of a Kubernetes Deployment\n\n```yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: frenzy-blog-api\n  labels:\n    app: blog-backend\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: blog-backend\n  template:\n    metadata:\n      labels:\n        app: blog-backend\n    spec:\n      containers:\n      - name: api\n        image: frenzy/blog-backend:v1.2.0\n        ports:\n        - containerPort: 5001\n        envFrom:\n        - secretRef:\n            name: blog-secrets\n        resources:\n          limits:\n            cpu: \"500m\"\n            memory: \"512Mi\"\n          requests:\n            cpu: \"100m\"\n            memory: \"128Mi\"\n        livenessProbe:\n          httpGet:\n            path: /api/posts\n            port: 5001\n          initialDelaySeconds: 15\n          periodSeconds: 20\n```\n\n## 2. Key Best Practices\n\n1. **Always Define Resource Requests & Limits:** Avoid the \"noisy neighbor\" problem where one pod consumes the node's entire RAM.\n2. **Implement Graceful Shutdown:** Listen for `SIGTERM` in Node.js and close active database connections before terminating.\n3. **Use Ingress Controllers with Automatic SSL:** Cert-Manager automates Let's Encrypt certificates renewal without manual intervention.",
+      "category": "devops",
+      "imageUrl": "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=1000&auto=format&fit=crop&q=80",
+      "publicId": null,
+      "author": {
+        "_id": "6ae24a8ea1850ee8fafd3d10",
+        "username": "ahmed_dev",
+        "email": "ahmed@frenzy.dev"
+      },
+      "createdAt": "2026-10-28T19:18:39.144Z",
+      "updatedAt": "2026-10-28T19:18:39.144Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ae24a8fa1850ee8fafd3d26",
+      "title": "Web Application Security: Defending Against XSS, CSRF, NoSQL Injection & Broken Auth",
+      "content": "# Web Application Security: Defending Against Modern Attack Vectors\n\nSecurity should never be an afterthought. Developers must write defensive code at every layer of the tech stack to safeguard customer data.\n\n---\n\n## 1. Cross-Site Scripting (XSS) Prevention\n\nXSS occurs when malicious scripts are injected into trusted websites.\n\n* **Never use raw `eval()` or unsanitized innerHTML:** Always sanitize user inputs or use modern libraries like DOMPurify.\n* **Content Security Policy (CSP):** Restrict where scripts, styles, and images can be fetched from.\n\n## 2. NoSQL Injection Defense\n\nAttacking MongoDB via malicious operators:\n\n```javascript\n// VULNERABLE:\nconst user = await User.findOne({ username: req.body.username, password: req.body.password });\n// If attacker sends { \"username\": \"admin\", \"password\": { \"$ne\": null } }, they bypass login!\n\n// SECURE: Enforce string types with validation\nif (typeof req.body.password !== 'string' || typeof req.body.email !== 'string') {\n  return res.status(400).json({ message: 'Invalid credentials format' });\n}\n```\n\n## 3. Essential Security Middleware Stack\n\n```javascript\nimport helmet from 'helmet';\nimport rateLimit from 'express-rate-limit';\n\n// Set secure HTTP headers\napp.use(helmet());\n\n// Protect against brute-force attacks\nconst authLimiter = rateLimit({\n  windowMs: 15 * 60 * 1000, // 15 minutes\n  max: 10, // max 10 failed login attempts per IP\n  message: 'Too many login attempts, please try again later.',\n});\n\napp.use('/api/users/login', authLimiter);\n```\n\n> **Conclusion:** Security is a continuous discipline. Keep dependencies updated using `npm audit`, enable MFA, and follow the principle of least privilege.",
+      "category": "fullstack",
+      "imageUrl": "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=1000&auto=format&fit=crop&q=80",
+      "publicId": null,
+      "author": {
+        "_id": "6ae24a8ea1850ee8fafd3d12",
+        "username": "sarah_tech",
+        "email": "sarah@frenzy.dev"
+      },
+      "createdAt": "2026-10-28T19:18:39.212Z",
+      "updatedAt": "2026-10-28T19:18:39.212Z",
+      "__v": 0
+    }
+  ]
+}

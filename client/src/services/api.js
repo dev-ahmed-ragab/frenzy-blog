@@ -1,41 +1,76 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000';
-
-const token = localStorage.getItem('token');
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  }
+  },
 });
 
+// Dynamic request interceptor to include latest token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// User API
 export const getUserProfile = async () => {
   try {
-    const response = await api.get('/users/profile');
+    const response = await api.get('/api/users/profile');
     return response.data;
   } catch (error) {
-    throw new Error('Failed to fetch user data');
+    throw new Error(error.response?.data?.message || 'Failed to fetch user data');
   }
 };
 
-export const updateUserProfile = async (userData) => {
+export const updateUserProfile = async (userId, userData) => {
   try {
-    const response = await api.put('/users/profile', userData);
+    const response = await api.put(`/api/users/${userId}`, userData);
     return response.data;
   } catch (error) {
-    throw new Error('Failed to update user data');
+    throw new Error(error.response?.data?.message || 'Failed to update profile');
   }
 };
 
+export const deleteUserProfile = async (userId) => {
+  try {
+    const response = await api.delete(`/api/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to delete account');
+  }
+};
+
+export const uploadUserAvatar = async (userId, formData) => {
+  try {
+    const response = await api.post(`/api/users/${userId}/avatar`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to upload avatar');
+  }
+};
+
+// Posts API
 export const getPosts = async () => {
   try {
     const response = await api.get('/api/posts');
     return response.data;
   } catch (error) {
-    throw new Error('Failed to fetch posts');
+    throw new Error(error.response?.data?.message || 'Failed to fetch posts');
   }
 };
 
@@ -44,7 +79,7 @@ export const getUserPosts = async () => {
     const response = await api.get('/api/posts/user');
     return response.data;
   } catch (error) {
-    throw new Error('Failed to fetch user posts');
+    throw new Error(error.response?.data?.message || 'Failed to fetch user posts');
   }
 };
 
@@ -53,33 +88,30 @@ export const createPost = async (formData) => {
     const response = await api.post('/api/posts', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`
-      }
+      },
     });
     return response.data;
   } catch (error) {
-    throw new Error('Failed to create post');
+    throw new Error(error.response?.data?.message || 'Failed to create post');
   }
 };
 
 export const updatePost = async (postId, formData) => {
   try {
-    // التحقق من وجود البيانات المطلوبة
-    if (!formData.get('title') || !formData.get('content') || !formData.get('category')) {
-      throw new Error('Missing required fields');
+    if (!formData.get('title') || !formData.content && !formData.get('content') || !formData.get('category')) {
+      // Validate form data
+      if (!formData.get('title') || !formData.get('category')) {
+        throw new Error('Missing required fields');
+      }
     }
 
-    // إرسال الطلب مع الإعدادات الصحيحة
     const response = await api.put(`/api/posts/${postId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+      },
     });
-    
     return response.data;
   } catch (error) {
-    // معالجة أنواع مختلفة من الأخطاء
     if (error.response) {
       throw new Error(`Server error: ${error.response.data.message || error.response.statusText}`);
     } else if (error.request) {
@@ -92,22 +124,11 @@ export const updatePost = async (postId, formData) => {
 
 export const deletePost = async (postId) => {
   try {
-    await api.delete(`/api/posts/${postId}`);
+    const response = await api.delete(`/api/posts/${postId}`);
+    return response.data;
   } catch (error) {
-    throw new Error('Failed to delete post');
+    throw new Error(error.response?.data?.message || 'Failed to delete post');
   }
-}
+};
 
-// Add a request interceptor to include the token dynamically
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+export default api;
